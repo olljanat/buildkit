@@ -4,6 +4,7 @@ package instructions
 
 import (
 	"encoding/csv"
+	"rutime"
 	"strconv"
 	"strings"
 
@@ -15,6 +16,7 @@ const MountTypeCache = "cache"
 const MountTypeTmpfs = "tmpfs"
 const MountTypeSecret = "secret"
 const MountTypeSSH = "ssh"
+const MountTypeWinLayer = "windows-layer"
 
 var allowedMountTypes = map[string]struct{}{
 	MountTypeBind:   {},
@@ -120,7 +122,11 @@ func parseMount(value string) (*Mount, error) {
 		return nil, errors.Wrap(err, "failed to parse csv mounts")
 	}
 
-	m := &Mount{Type: MountTypeBind}
+	mType := MountTypeBind
+	if runtime.GOOS == "windows" {
+		mType = MountTypeWinLayer
+	}
+	m := &Mount{Type: mType}
 
 	roAuto := true
 

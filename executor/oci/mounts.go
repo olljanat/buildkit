@@ -3,6 +3,7 @@ package oci
 import (
 	"context"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
@@ -64,9 +65,13 @@ func GetMounts(ctx context.Context, mountOpts ...MountOpts) ([]specs.Mount, erro
 
 func withROBind(src, dest string) func(m []specs.Mount) ([]specs.Mount, error) {
 	return func(m []specs.Mount) ([]specs.Mount, error) {
+		mType := "bind"
+		if runtime.GOOS == "windows" {
+			mType = "windows-layer"
+		}
 		m = append(m, specs.Mount{
 			Destination: dest,
-			Type:        "bind",
+			Type:        mType,
 			Source:      src,
 			Options:     []string{"rbind", "ro"},
 		})
