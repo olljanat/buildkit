@@ -64,3 +64,4 @@ deploy:
       repo: moby/buildkit
       branch: master
       condition: $TRAVIS_EVENT_TYPE == "cron"
+
